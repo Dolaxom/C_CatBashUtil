@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[]) {
 	struct activeFlags CurrentFlags;
-    struct activeFlags *pCurrentFlags = &CurrentFlags;
+	struct activeFlags *pCurrentFlags = &CurrentFlags;
 
 	// Поиск аргументов и запись найденный в структуру
 	searchArgs(argc, argv, pCurrentFlags);
