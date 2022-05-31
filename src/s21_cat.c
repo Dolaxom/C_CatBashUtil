@@ -51,11 +51,9 @@ int offsetOnRightSiteOfArguments(int argc, char *argv[]) {
     for (int i = argc - 1; i > 0; i--) {
         char *name = argv[i];
         if (name[0] == '-') {
-            printf("%s аргумент\n", name);
             break;
-        } else {
-            printf("%s нихуя не аргумент\n", name);
         }
+
         tmp = i;
     }
 
@@ -139,7 +137,8 @@ void withoutFlags(int argc, char *argv[]) {
 
 void flagN_Activate(int argc, char *argv[]) {
     const int MAX_LINE = 1000000;
-    FILE *file;
+    char temp_filename[5000];
+    FILE *file, *temp;
     int count;
     char buffer[MAX_LINE];
     for (count = 1; count < argc; count++) {
@@ -147,12 +146,33 @@ void flagN_Activate(int argc, char *argv[]) {
             continue;
         }
 
-    int current_line = 1;
+        strcpy(temp_filename, "temp_");
+        strcat(temp_filename, argv[count]);
 
-    while (fgets(buffer, MAX_LINE, file) != NULL) {
-        printf("%d %s", current_line++, buffer);
-    }
+        temp = fopen(temp_filename, "w");
 
+        if (temp == NULL) {
+            printf("ОШИБКА ФАЙЛА\n");
+        }
+
+        int current_line = 1;
+
+        while (fgets(buffer, MAX_LINE, file) != NULL) {
+            fprintf(temp, "%d %s", current_line++, buffer);
+        }
         fclose(file);
+        fclose(temp);
+        output(temp_filename, temp);
     }
+}
+
+void output(char *temp_filename, FILE* temp) {
+        int chr;
+        temp = fopen(temp_filename, "r");
+        while((chr = getc(temp)) != EOF) {
+            fprintf(stdout, "%c", chr);
+        }
+
+        fclose(temp);
+        remove(temp_filename);
 }
