@@ -31,6 +31,6 @@ void deleteCopyFiles();
 // Обработка случая без флагов
 void withoutFlags(int argc, char *argv[]);
 // Обработка -n
-void flagN_Activate(int argc, char *argv[]);
+void flagN_Activate();
 // Вывод файлов
-void output(char *temp_filename, FILE* temp);
+void output();
