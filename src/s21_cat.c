@@ -67,10 +67,7 @@ int isValidFiles(int offset, int argc, char *argv[]) {
         char *name = argv[i];
         if ((file = fopen(name, "r")) == NULL) {
             tmp = 0;
-            printf("Файл %s не был найден\n", name);
             break;
-        } else {
-            printf("Файл %s успешно нашёлся\n", name);
         }
 
         fclose(file);
@@ -95,6 +92,8 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
         withoutFlags(argc, argv);
     }
 
+    createCopyFiles(argc, argv);
+
     if (pCurrentFlags->s == 1) {
         printf("Срабатывание флага -s\n");
     }
@@ -115,14 +114,76 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
     if (pCurrentFlags->e == 1) {
         printf("Срабатывание флага -e\n");
     }
+
+    deleteCopyFiles();
+}
+
+void createCopyFiles(int argc, char *argv[]) {
+    const int MAX_LINE = 1000000;
+    char temp_filename[5000];
+    FILE *file, *temp;
+    char buffer[MAX_LINE];
+    for (int count = 1; count < argc; count++) {
+        if((file = fopen(argv[count], "r")) == NULL) {
+            continue;
+        }
+
+        mkdir("tmp", S_IRWXU);
+
+        strcpy(temp_filename, "./tmp/tmp_");
+        strcat(temp_filename, argv[count]);
+        
+
+        DIR *folder;
+        struct dirent *dir;
+        folder = opendir("tmp");
+        if (folder) {
+            while ((dir = readdir(folder)) != NULL) {
+                temp = fopen(temp_filename, "w");
+            }
+        }
+
+        
+        closedir(folder);
+
+        if (temp == NULL) {
+            printf("ОШИБКА ФАЙЛА\n");
+        }
+
+        while (fgets(buffer, MAX_LINE, file) != NULL) {
+            fprintf(temp, "%s", buffer);
+        }
+        fclose(file);
+        fclose(temp);
+    }
+}
+
+void deleteCopyFiles() {
+    char temp_filename[5000];
+    DIR *folder;
+    struct dirent *entry;
+
+    folder = opendir("tmp");
+    if(folder == NULL) {
+        perror("Нет такой папки\n");
+    }
+
+    while((entry=readdir(folder)) ) {
+        strcpy(temp_filename, "./tmp/");
+        strcat(temp_filename, entry->d_name);
+        remove(temp_filename);
+    }
+
+    closedir(folder);
+
+    rmdir("tmp");
 }
 
 void withoutFlags(int argc, char *argv[]) {
     FILE *file;
     int chr;
-    int count;
 
-    for (count = 1; count < argc; count++) {
+    for (int count = 1; count < argc; count++) {
         if((file = fopen(argv[count], "r")) == NULL) {
             continue;
         }
@@ -139,9 +200,8 @@ void flagN_Activate(int argc, char *argv[]) {
     const int MAX_LINE = 1000000;
     char temp_filename[5000];
     FILE *file, *temp;
-    int count;
     char buffer[MAX_LINE];
-    for (count = 1; count < argc; count++) {
+    for (int count = 1; count < argc; count++) {
         if((file = fopen(argv[count], "r")) == NULL) {
             continue;
         }
@@ -158,7 +218,7 @@ void flagN_Activate(int argc, char *argv[]) {
         int current_line = 1;
 
         while (fgets(buffer, MAX_LINE, file) != NULL) {
-            fprintf(temp, "%d %s", current_line++, buffer);
+            fprintf(temp, "%6d\t%s", current_line++, buffer);
         }
         fclose(file);
         fclose(temp);
@@ -167,12 +227,11 @@ void flagN_Activate(int argc, char *argv[]) {
 }
 
 void output(char *temp_filename, FILE* temp) {
-        int chr;
-        temp = fopen(temp_filename, "r");
-        while((chr = getc(temp)) != EOF) {
-            fprintf(stdout, "%c", chr);
-        }
+    int chr;
+    temp = fopen(temp_filename, "r");
+    while((chr = getc(temp)) != EOF) {
+        fprintf(stdout, "%c", chr);
+    }
 
-        fclose(temp);
-        remove(temp_filename);
+    fclose(temp);
 }
