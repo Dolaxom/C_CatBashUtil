@@ -26,3 +26,5 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags);
 void withoutFlags(int argc, char *argv[]);
 
 void flagN_Activate(int argc, char *argv[]);
+
+void output(char *temp_filename, FILE* temp);
