@@ -88,34 +88,39 @@ int checkNullFlags(struct activeFlags *pCurrentFlags) {
 }
 
 void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
+    int tmp = 1;
     if (checkNullFlags(pCurrentFlags)) {
         withoutFlags(argc, argv);
+        tmp = 0;
     }
 
-    createCopyFiles(argc, argv);
+    if (tmp == 1) {
+        createCopyFiles(argc, argv);
 
-    if (pCurrentFlags->s == 1) {
-        printf("Срабатывание флага -s\n");
+        if (pCurrentFlags->s == 1) {
+            printf("Срабатывание флага -s\n");
+        }
+
+        if (pCurrentFlags->b == 1) {
+            printf("Срабатывание флага -b\n");
+        }
+
+        if (pCurrentFlags->n == 1) {
+            printf("Срабатывание флага -n\n");
+            flagN_Activate(argc, argv);
+        }
+
+        if (pCurrentFlags->t == 1) {
+            printf("Срабатывание флага -t\n");
+        }
+
+        if (pCurrentFlags->e == 1) {
+            printf("Срабатывание флага -e\n");
+        }
+        output();
+        deleteCopyFiles();
     }
 
-    if (pCurrentFlags->b == 1) {
-        printf("Срабатывание флага -b\n");
-    }
-
-    if (pCurrentFlags->n == 1) {
-        printf("Срабатывание флага -n\n");
-        flagN_Activate(argc, argv);
-    }
-
-    if (pCurrentFlags->t == 1) {
-        printf("Срабатывание флага -t\n");
-    }
-
-    if (pCurrentFlags->e == 1) {
-        printf("Срабатывание флага -e\n");
-    }
-
-    deleteCopyFiles();
 }
 
 void createCopyFiles(int argc, char *argv[]) {
@@ -133,7 +138,6 @@ void createCopyFiles(int argc, char *argv[]) {
         strcpy(temp_filename, "./tmp/tmp_");
         strcat(temp_filename, argv[count]);
         
-
         DIR *folder;
         struct dirent *dir;
         folder = opendir("tmp");
@@ -142,12 +146,10 @@ void createCopyFiles(int argc, char *argv[]) {
                 temp = fopen(temp_filename, "w");
             }
         }
-
-        
         closedir(folder);
 
         if (temp == NULL) {
-            printf("ОШИБКА ФАЙЛА\n");
+            printf("(not) error\n");
         }
 
         while (fgets(buffer, MAX_LINE, file) != NULL) {
@@ -196,42 +198,77 @@ void withoutFlags(int argc, char *argv[]) {
     }
 }
 
-void flagN_Activate(int argc, char *argv[]) {
-    const int MAX_LINE = 1000000;
-    char temp_filename[5000];
+void flagN_Activate() {
     FILE *file, *temp;
+    const int MAX_LINE = 999999;
     char buffer[MAX_LINE];
-    for (int count = 1; count < argc; count++) {
-        if((file = fopen(argv[count], "r")) == NULL) {
+    char filename[2000];
+    char temp_filename[2000];
+
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir("tmp");
+
+    while ((entry=readdir(folder))) {
+        if (entry->d_name[0] == '.') {
             continue;
         }
 
-        strcpy(temp_filename, "temp_");
-        strcat(temp_filename, argv[count]);
+        strcpy(filename, "./tmp/");
+        strcat(filename, entry->d_name);
+        strcpy(temp_filename, "./tmp/tmp____");
+        strcat(temp_filename, entry->d_name);
 
+        file = fopen(filename, "r");
         temp = fopen(temp_filename, "w");
 
-        if (temp == NULL) {
-            printf("ОШИБКА ФАЙЛА\n");
+        if (file == NULL || temp == NULL) {
+            fclose(file);
+            fclose(temp);
+            continue;
         }
 
         int current_line = 1;
-
-        while (fgets(buffer, MAX_LINE, file) != NULL) {
+        while (fgets(buffer, MAX_LINE, file)) {
             fprintf(temp, "%6d\t%s", current_line++, buffer);
         }
-        fclose(file);
+
         fclose(temp);
-        output(temp_filename, temp);
+        fclose(file);
+
+        remove(filename);
+        rename(temp_filename, filename);
     }
 }
 
-void output(char *temp_filename, FILE* temp) {
+void output() {
+    FILE *file;
+    char filename[2000];
     int chr;
-    temp = fopen(temp_filename, "r");
-    while((chr = getc(temp)) != EOF) {
-        fprintf(stdout, "%c", chr);
-    }
 
-    fclose(temp);
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir("tmp");
+
+    while ((entry=readdir(folder))) {
+        if (entry->d_name[0] == '.') {
+            continue;
+        }
+
+        strcpy(filename, "./tmp/");
+        strcat(filename, entry->d_name);
+
+        file = fopen(filename, "r");
+
+        if (file == NULL) {
+            fclose(file);
+            continue;
+        }
+
+        while((chr = getc(file)) != EOF) {
+            fprintf(stdout, "%c", chr);
+        }
+
+        fclose(file);
+    }
 }
