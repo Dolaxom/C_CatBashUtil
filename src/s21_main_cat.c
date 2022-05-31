@@ -4,15 +4,15 @@ int main(int argc, char *argv[]) {
 	struct activeFlags CurrentFlags;
     struct activeFlags *pCurrentFlags = &CurrentFlags;
 
+	// Поиск аргументов и запись найденный в структуру
 	searchArgs(argc, argv, pCurrentFlags);
 
-	printf("\n");
-
+	// Отступ раздедения аргументов файлов от флагов
 	int offset = offsetOnRightSiteOfArguments(argc, argv);
 
-	printf("\n");
-
+	// Проверка файлов на валидность
 	if (isValidFiles(offset, argc, argv) == 1) {
+	// Запуск функций в зависимости от активированных флагов
 		flagHandling(argc, argv, pCurrentFlags);
 	}
 
