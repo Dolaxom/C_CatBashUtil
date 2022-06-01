@@ -116,6 +116,7 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
 
         if (pCurrentFlags->t == 1) {
             printf("Срабатывание флага -t\n");
+            flagT_Activate();
         }
 
         if (pCurrentFlags->e == 1) {
@@ -307,6 +308,52 @@ void flagB_Activate() {
         remove(filename);
         rename(temp_filename, filename);
     }
+}
+
+void flagT_Activate() {
+    FILE *file, *temp;
+    const int MAX_LINE = 2000;
+    char filename[MAX_LINE];
+    char temp_filename[MAX_LINE];
+    int chr;
+
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir("tmp");
+
+    while ((entry=readdir(folder))) {
+        if (entry->d_name[0] == '.') {
+            continue;
+        }
+
+        strcpy(filename, "./tmp/");
+        strcat(filename, entry->d_name);
+        strcpy(temp_filename, "./tmp/tmp____");
+        strcat(temp_filename, entry->d_name);
+
+        file = fopen(filename, "r");
+        temp = fopen(temp_filename, "w");
+
+        if (file == NULL || temp == NULL) {
+            fclose(file);
+            fclose(temp);
+            continue;
+        }
+
+        while((chr = getc(file)) != EOF) {
+            if ((int)chr == 9) {
+                fprintf(temp, "%s", "^I");
+            } else {
+                fprintf(temp, "%c", chr);
+            }
+        }
+
+        fclose(temp);
+        fclose(file);
+
+        remove(filename);
+        rename(temp_filename, filename);
+    } 
 }
 
 void flagE_Activate() {

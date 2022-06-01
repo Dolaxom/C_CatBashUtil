@@ -34,6 +34,8 @@ void withoutFlags(int argc, char *argv[]);
 void flagN_Activate();
 // Обработка флага -b
 void flagB_Activate();
+// Обработка флага -t
+void flagT_Activate();
 // Обработка флага -e
 void flagE_Activate();
 // Вывод файлов
