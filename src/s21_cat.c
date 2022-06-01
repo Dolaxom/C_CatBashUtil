@@ -17,6 +17,7 @@ void searchArgs(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
             case 'b': 
                 printf("Найден аргумент b\n");
                 pCurrentFlags->b = 1;
+                pCurrentFlags->n = 0;
                 break;
 
             case 'e':
@@ -26,7 +27,9 @@ void searchArgs(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
 
             case 'n':
                 printf("Найден аргумент n\n");
-                pCurrentFlags->n = 1;
+                if (pCurrentFlags->b == 0) {
+                    pCurrentFlags->n = 1;
+                }
                 break;
 
             case 's':
@@ -103,11 +106,12 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
 
         if (pCurrentFlags->b == 1) {
             printf("Срабатывание флага -b\n");
+            flagB_Activate();
         }
 
         if (pCurrentFlags->n == 1) {
             printf("Срабатывание флага -n\n");
-            flagN_Activate(argc, argv);
+            flagN_Activate();
         }
 
         if (pCurrentFlags->t == 1) {
@@ -116,6 +120,7 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
 
         if (pCurrentFlags->e == 1) {
             printf("Срабатывание флага -e\n");
+            flagE_Activate();
         }
         output();
         deleteCopyFiles();
@@ -247,6 +252,100 @@ void flagN_Activate() {
         int current_line = 1;
         while (fgets(buffer, MAX_LINE, file)) {
             fprintf(temp, "%6d\t%s", current_line++, buffer);
+        }
+
+        fclose(temp);
+        fclose(file);
+
+        remove(filename);
+        rename(temp_filename, filename);
+    }
+}
+
+void flagB_Activate() {
+    FILE *file, *temp;
+    const int MAX_LINE = 999999;
+    char buffer[MAX_LINE];
+    char filename[2000];
+    char temp_filename[2000];
+
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir("tmp");
+
+    while ((entry=readdir(folder))) {
+        if (entry->d_name[0] == '.') {
+            continue;
+        }
+
+        strcpy(filename, "./tmp/");
+        strcat(filename, entry->d_name);
+        strcpy(temp_filename, "./tmp/tmp____");
+        strcat(temp_filename, entry->d_name);
+
+        file = fopen(filename, "r");
+        temp = fopen(temp_filename, "w");
+
+        if (file == NULL || temp == NULL) {
+            fclose(file);
+            fclose(temp);
+            continue;
+        }
+
+        int current_line = 1;
+        while (fgets(buffer, MAX_LINE, file)) {
+            if (strlen(buffer) > 1) {
+                fprintf(temp, "%6d\t%s", current_line++, buffer);
+            } else {
+                fprintf(temp, "\t%s", buffer);
+            }
+        }
+
+        fclose(temp);
+        fclose(file);
+
+        remove(filename);
+        rename(temp_filename, filename);
+    }
+}
+
+void flagE_Activate() {
+    FILE *file, *temp;
+    const int MAX_LINE = 2000;
+    char filename[MAX_LINE];
+    char temp_filename[MAX_LINE];
+    int chr;
+
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir("tmp");
+
+    while ((entry=readdir(folder))) {
+        if (entry->d_name[0] == '.') {
+            continue;
+        }
+
+        strcpy(filename, "./tmp/");
+        strcat(filename, entry->d_name);
+        strcpy(temp_filename, "./tmp/tmp____");
+        strcat(temp_filename, entry->d_name);
+
+        file = fopen(filename, "r");
+        temp = fopen(temp_filename, "w");
+
+        if (file == NULL || temp == NULL) {
+            fclose(file);
+            fclose(temp);
+            continue;
+        }
+
+        while((chr = getc(file)) != EOF) {
+            if (chr == '\n') {
+                fprintf(temp, "%c", 36);
+                fprintf(temp, "%c", chr);
+            } else {
+                fprintf(temp, "%c", chr);
+            }
         }
 
         fclose(temp);
