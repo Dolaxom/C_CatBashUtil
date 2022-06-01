@@ -128,14 +128,12 @@ void createCopyFiles(int argc, char *argv[]) {
     char temp_filename[5000];
     FILE *file, *temp;
     char buffer[MAX_LINE];
-    int stepsPrintA = 1;
     for (int count = 1; count < argc; count++) {
         if ((file = fopen(argv[count], "r")) == NULL) {
             continue;
         }
         int offset = 0;
-        char nameOfFile[200];
-        strcpy(nameOfFile, argv[count]);
+        char *nameOfFile = argv[count];
         int lengthNameOfFile = strlen(nameOfFile);
         for (int i = lengthNameOfFile; i > 0; i--) {
             if (nameOfFile[i] == '/') {
@@ -143,26 +141,29 @@ void createCopyFiles(int argc, char *argv[]) {
                 break;
             }
         }
-        char tmp[2000] = "";
+        char tmp[2000];
+        int stepsPrintA = 1;
         int j = 0;
-        for (int z = 0; z < stepsPrintA; z++) {
-            tmp[z] = 'A';
-        }
         for (int i = 0; i < lengthNameOfFile; i++) {
             if (i < offset) {
                 continue;
             }
+            // for (int z = 0; z < stepsPrintA; z++) {
+            //     tmp[z] = 'A';
+            // }
             tmp[j + stepsPrintA] = nameOfFile[i];
             j++;
         }
-        stepsPrintA++;
         strcpy(nameOfFile, tmp);
+
         strcpy(temp_filename, "./tmp/tmp_");
         strcat(temp_filename, nameOfFile);
 
         mkdir("tmp", S_IRWXU);
 
         temp = fopen(temp_filename, "w");
+
+        printf("\nNo error %s\n", temp_filename);
 
         if (temp == NULL) {
             printf("error %s\n", temp_filename);
@@ -258,38 +259,33 @@ void flagN_Activate() {
 }
 
 void output() {
-    struct dirent **namelist;
-    int n;
     FILE *file;
     char filename[2000];
     int chr;
 
-    n = scandir("tmp", &namelist, 0, alphasort);
-    if (n < 0) {
-        perror("scandir");
-    } else {
-        while (n--) {
-            if (namelist[n]->d_name[0] == '.') {
-                continue;
-            }
-            strcpy(filename, "./tmp/");
-            strcat(filename, namelist[n]->d_name);
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir("tmp");
 
-            file = fopen(filename, "r");
-            if (file == NULL) {
-                fclose(file);
-                continue;
-            }
-
-            while((chr = getc(file)) != EOF) {
-                fprintf(stdout, "%c", chr);
-            }
-
-            fclose(file);
-
-            free(namelist[n]);
+    while ((entry=readdir(folder))) {
+        if (entry->d_name[0] == '.') {
+            continue;
         }
 
-        free(namelist);
+        strcpy(filename, "./tmp/");
+        strcat(filename, entry->d_name);
+
+        file = fopen(filename, "r");
+
+        if (file == NULL) {
+            fclose(file);
+            continue;
+        }
+
+        while((chr = getc(file)) != EOF) {
+            fprintf(stdout, "%c", chr);
+        }
+
+        fclose(file);
     }
 }
