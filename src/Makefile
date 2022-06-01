@@ -1,23 +1,29 @@
+TARGET = s21_cat
+PATH = ../data/test.txt ../data/test2.txt
+
 build:
-	gcc -Wall -Werror -Wextra s21_cat.c s21_main_cat.c -o s21_cat
+	gcc -Wall -Werror -Wextra s21_cat.c s21_main_cat.c -o $(TARGET)
+
+all:
+	./$(TARGET) -b -n -e $(PATH)
 
 base:
-	./s21_cat ../data/test.txt ../data/test2.txt
+	./$(TARGET) $(PATH)
 
 N:
-	./s21_cat -n ../data/test.txt ../data/test2.txt
+	./$(TARGET) -n $(PATH)
 
 B:
-	./s21_cat -n -b -n ../data/test.txt ../data/test2.txt
+	./$(TARGET) -n -b -n $(PATH)
 
 E:
-	./s21_cat -e ../data/test.txt ../data/test2.txt
+	./$(TARGET) -e $(PATH)
 
 NE:
-	./s21_cat -n -e ../data/test.txt ../data/test2.txt
+	./$(TARGET) -n -e $(PATH)
 
 BE:
-	./s21_cat -b -e ../data/test.txt ../data/test2.txt
+	./$(TARGET) -b -e $(PATH)
 	
 T:
-	./s21_cat -t ../data/test.txt ../data/test2.txt
+	./$(TARGET) -t $(PATH)
