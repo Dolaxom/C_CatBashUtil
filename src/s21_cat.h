@@ -30,6 +30,8 @@ void createCopyFiles(int argc, char *argv[]);
 void deleteCopyFiles();
 // Обработка случая без флагов
 void withoutFlags(int argc, char *argv[]);
+// Обработка флага -s
+void flagS_Activate();
 // Обработка флага -n
 void flagN_Activate();
 // Обработка флага -b
