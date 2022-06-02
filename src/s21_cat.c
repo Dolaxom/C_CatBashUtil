@@ -102,6 +102,7 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
 
         if (pCurrentFlags->s == 1) {
             printf("Срабатывание флага -s\n");
+            flagS_Activate();
         }
 
         if (pCurrentFlags->b == 1) {
@@ -220,6 +221,49 @@ void withoutFlags(int argc, char *argv[]) {
     }
 }
 
+void flagS_Activate() {
+    FILE *file, *temp;
+    const int MAX_LINE = 999999;
+    char buffer[MAX_LINE];
+    char filename[2000];
+    char temp_filename[2000];
+
+    DIR *folder;
+    struct dirent *entry;
+    folder = opendir("tmp");
+
+    while ((entry=readdir(folder))) {
+        if (entry->d_name[0] == '.') {
+            continue;
+        }
+
+        strcpy(filename, "./tmp/");
+        strcat(filename, entry->d_name);
+        strcpy(temp_filename, "./tmp/tmp____");
+        strcat(temp_filename, entry->d_name);
+
+        file = fopen(filename, "r");
+        temp = fopen(temp_filename, "w");
+
+        if (file == NULL || temp == NULL) {
+            fclose(file);
+            fclose(temp);
+            continue;
+        }
+
+        int current_line = 1;
+        while (fgets(buffer, MAX_LINE, file)) {
+            fprintf(temp, "%6d\t%s", current_line++, buffer);
+        }
+
+        fclose(temp);
+        fclose(file);
+
+        remove(filename);
+        rename(temp_filename, filename);
+    }
+}
+
 void flagN_Activate() {
     FILE *file, *temp;
     const int MAX_LINE = 999999;
@@ -295,10 +339,10 @@ void flagB_Activate() {
 
         int current_line = 1;
         while (fgets(buffer, MAX_LINE, file)) {
-            if (strlen(buffer) > 1) {
+            if (strlen(buffer) > 1 || buffer[0] == '\t') {
                 fprintf(temp, "%6d\t%s", current_line++, buffer);
             } else {
-                fprintf(temp, "\t%s", buffer);
+                fprintf(temp, "%s", buffer);
             }
         }
 
@@ -340,11 +384,17 @@ void flagT_Activate() {
             continue;
         }
 
+        int i = 0;
         while((chr = getc(file)) != EOF) {
-            if ((int)chr == 9) {
+            if ((int)chr == 9 && i > 6) {
                 fprintf(temp, "%s", "^I");
             } else {
                 fprintf(temp, "%c", chr);
+            }
+            i++;
+
+            if ((int)chr == 10) {
+                i = 0;
             }
         }
 
