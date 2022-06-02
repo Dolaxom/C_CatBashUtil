@@ -15,35 +15,29 @@ void searchArgs(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
     while ((res = getopt(argc, argv, "benst")) != -1) {
         switch (res) {
             case 'b': 
-                printf("Найден аргумент b\n");
                 pCurrentFlags->b = 1;
                 pCurrentFlags->n = 0;
                 break;
 
             case 'e':
-                printf("Найден аргумент e\n");
                 pCurrentFlags->e = 1;
                 break;
 
             case 'n':
-                printf("Найден аргумент n\n");
                 if (pCurrentFlags->b == 0) {
                     pCurrentFlags->n = 1;
                 }
                 break;
 
             case 's':
-                printf("Найден аргумент s\n");
                 pCurrentFlags->s = 1;
                 break;
 
             case 't':
-                printf("Найден аргумент t\n");
                 pCurrentFlags->t = 1;
                 break;
 
             default:
-                printf("Найден кто-то\n");
                 break;
         }
     }
@@ -101,27 +95,22 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
         createCopyFiles(argc, argv);
 
         if (pCurrentFlags->s == 1) {
-            printf("Срабатывание флага -s\n");
             flagS_Activate();
         }
 
         if (pCurrentFlags->b == 1) {
-            printf("Срабатывание флага -b\n");
             flagB_Activate();
         }
 
         if (pCurrentFlags->n == 1) {
-            printf("Срабатывание флага -n\n");
             flagN_Activate();
         }
 
         if (pCurrentFlags->t == 1) {
-            printf("Срабатывание флага -t\n");
             flagT_Activate();
         }
 
         if (pCurrentFlags->e == 1) {
-            printf("Срабатывание флага -e\n");
             flagE_Activate();
         }
         output();
@@ -251,9 +240,18 @@ void flagS_Activate() {
             continue;
         }
 
-        int current_line = 1;
+        int flagToNullStr = 0;
+
         while (fgets(buffer, MAX_LINE, file)) {
-            fprintf(temp, "%6d\t%s", current_line++, buffer);
+            if (strlen(buffer) > 1 || buffer[0] == '\t') {
+                flagToNullStr = 0;
+                fprintf(temp, "%s", buffer);
+            } else {
+                if (flagToNullStr != 1) {
+                    fprintf(temp, "%s", buffer);
+                }
+                flagToNullStr = 1;
+            }
         }
 
         fclose(temp);
