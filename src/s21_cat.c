@@ -48,7 +48,6 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
     const int MAX_LINE = 999999;
     char original[MAX_LINE];
     char buffer[MAX_LINE];
-
     for (int count = 1; count < argc; count++) {
         if((file = fopen(argv[count], "r")) == NULL) {
             continue;
@@ -72,7 +71,7 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
                     sprintf(buffer, "%6d\t%s", current_line++, original);
                 } else {
                     if (pCurrentFlags->e == 1) {
-                        sprintf(buffer, "      \t%s", original);
+                        sprintf(buffer, "%s", original);
                     } else {
                         sprintf(buffer, "%s", original);
                     }
@@ -84,13 +83,33 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
                 strcpy(original, buffer);
             }
             if (pCurrentFlags->t == 1) {
-                strcpy(buffer, original);
-                char *ptr = strchr(buffer, '\t');
-                if (ptr != NULL) {
-                    *ptr = '^';
-                    *(ptr + 1) = 'I';
+                memset(buffer, 0 , 999999);
+                size_t length = strlen(original);
+                size_t j = 0;
+                for (size_t i = 0; i < length; i++) {
+                    if ((int)original[i] != 9) {
+                        buffer[j] = original[i];
+                    } else {
+                        if (pCurrentFlags->b == 1 || pCurrentFlags->n == 1) {
+                            if (i < 7) {
+                                buffer[j] = original[i];
+                            } else {
+                                buffer[j] = '^';
+                                j++;
+                                buffer[j] = 'I';
+                            }
+                        } else {
+                            buffer[j] = '^';
+                            j++;
+                            buffer[j] = 'I';
+                        }
+
+                    }
+                    j++;
                 }
-                strcpy(original, buffer);     
+                int * aboba;
+                aboba = pCurrentFlags->b;
+                strcpy(original, buffer);
             }
             if (pCurrentFlags->e == 1) {
                 strcpy(buffer, original);
