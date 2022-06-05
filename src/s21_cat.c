@@ -71,7 +71,17 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
                     sprintf(buffer, "%6d\t%s", current_line++, original);
                 } else {
                     if (pCurrentFlags->e == 1) {
-                        sprintf(buffer, "%s", original);
+                        #ifdef __APPLE__
+                            if (__builtin_available( macOS 12.0, * )) {
+                                sprintf(buffer, "      \t%s", original);
+                            } else {
+                                sprintf(buffer, "%s", original);
+                            }
+                        #endif
+
+                        #ifdef __linux__
+                            sprintf(buffer, "%s", original);
+                        #endif
                     } else {
                         sprintf(buffer, "%s", original);
                     }
@@ -107,8 +117,7 @@ void flagHandling(int argc, char *argv[], struct activeFlags *pCurrentFlags) {
                     }
                     j++;
                 }
-                int * aboba;
-                aboba = pCurrentFlags->b;
+
                 strcpy(original, buffer);
             }
             if (pCurrentFlags->e == 1) {
