@@ -8,7 +8,6 @@ TEST_FILE2="../data/file"
 TEST_FILE3="../data/111.txt"
 TEST_FILE4="../data/222.txt"
 echo /dev/null > log.txt
-echo "Первый тест"
 
 for var in -b -e -n -s -t #-E -T --number-nonblank --number --squeeze-blank
 do
@@ -16,7 +15,6 @@ do
           TEST2="$var $TEST_FILE2"
           TEST3="$var $TEST_FILE3"
           TEST4="$var $TEST_FILE4"
-#          echo "$TEST1"
           ./s21_cat $TEST1 > s21_cat.txt
           cat $TEST1 > cat.txt
           DIFF_RES="$(diff -s s21_cat.txt cat.txt)"
@@ -211,7 +209,6 @@ do
               TEST2="$var $var2 $var3 $var4 $TEST_FILE2"
               TEST3="$var $var2 $var3 $var4 $TEST_FILE3"
               TEST4="$var $var2 $var3 $var4 $TEST_FILE4"
-#              echo "$TEST1"
           ./s21_cat $TEST1 > s21_cat.txt
           cat $TEST1 > cat.txt
           DIFF_RES="$(diff -s s21_cat.txt cat.txt)"
@@ -223,7 +220,6 @@ do
               (( COUNTER_FAIL++ ))
           fi
 
-          # === TEST 2 ===
           ./s21_cat $TEST2 > s21_cat2.txt
           cat $TEST2 > cat2.txt
           DIFF_RES="$(diff -s s21_cat2.txt cat2.txt)"
@@ -235,7 +231,6 @@ do
               (( COUNTER_FAIL++ ))
           fi
 
-          # === TEST 3 ===
           ./s21_cat $TEST3 > s21_cat3.txt
           cat $TEST3 > cat3.txt
           DIFF_RES="$(diff -s s21_cat3.txt cat3.txt)"
@@ -247,7 +242,6 @@ do
               (( COUNTER_FAIL++ ))
           fi
 
-          # === TEST 4 ===
           ./s21_cat $TEST4 > s21_cat4.txt
           cat $TEST4 > cat4.txt
           DIFF_RES="$(diff -s s21_cat4.txt cat4.txt)"
