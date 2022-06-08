@@ -1,5 +1,4 @@
 #include "s21_cat.h"
-#include <ctype.h> 
 
 void init(struct activeFlags *pCurrentFlags) {
     pCurrentFlags->b = 0;
