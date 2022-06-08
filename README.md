@@ -20,6 +20,9 @@ Example: ./s21_cat -n -e ../data/test.txt ../data/test2.txt
 
 In the **s21_cat.c** file, the implementation of the argument parser, copying files, and processing them with flags. In **s21_cat.h** the declaration of all functions and struct with flags.
 
+
+## Supports OS:
+
 | macOS | ✅ |
 | :---: | :---: |
 | Lunux | ✅ |
