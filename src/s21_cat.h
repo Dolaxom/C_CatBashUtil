@@ -12,6 +12,7 @@ struct activeFlags {
 	int n;
 	int s;
 	int t;
+	int v;
 };
 // Зануляет структуру
 void init(struct activeFlags *pCurrentFlags);
@@ -40,3 +41,5 @@ void flagT_Activate();
 void flagE_Activate();
 // Вывод файлов
 void output();
+
+void *insert(const char *src, const char *str, size_t start_index);

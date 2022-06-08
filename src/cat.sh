@@ -3,10 +3,10 @@
 COUNTER_SUCCESS=0
 COUNTER_FAIL=0
 DIFF_RES=""
-TEST_FILE="bytes.txt"
-TEST_FILE2="file"
-TEST_FILE3="111.txt"
-TEST_FILE4="222.txt"
+TEST_FILE="../data/bytes.txt"
+TEST_FILE2="../data/file"
+TEST_FILE3="../data/111.txt"
+TEST_FILE4="../data/222.txt"
 echo /dev/null > log.txt
 echo "Первый тест"
 
